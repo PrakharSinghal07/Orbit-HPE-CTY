@@ -61,7 +61,9 @@ const ContextProvider = (props) => {
       });
       const result = await response.json();
       {
-        setConversation(result);
+        setConversation(result);  
+
+
 
         setActiveConversationId(result.sessionId);
       }
@@ -76,9 +78,10 @@ const ContextProvider = (props) => {
         `http://127.0.0.1:8000/conversation/active/${activeConversationId}`
       );
       const result = await response.json();
-      // console.log(result);
       if(result && result.sessionId !== conversation.sessionId)
-      setConversation(result)
+        setConversation(result); 
+
+
     };
     getCurrentConversation();
   }, [activeConversationId]);
@@ -100,34 +103,34 @@ const ContextProvider = (props) => {
 
   const onSent = async (prompt, file) => {
     const userPrompt = prompt || input;
-
+  
     setAllowSending(false);
     setLoading(true);
     stopReplyRef.current = false;
     setStopIcon(true);
     setShowResult(true);
-
+  
     const userMessage = { type: "user", text: userPrompt };
     const botMessage = { type: "bot", text: "..." };
-
+  
     setConversation((prev) => ({
       ...prev,
-      messages: [...prev.messages, userMessage, botMessage],
+      messages: [...(prev.messages || []), userMessage, botMessage],
     }));
-
+  
     setInput("");
-
+  
     const formData = new FormData();
     formData.append("message", userPrompt);
     if (file) formData.append("file", file);
-
+  
     let botReply;
     try {
       const response = await fetch("http://127.0.0.1:8000/chat", {
         method: "POST",
         body: formData,
       });
-
+  
       if (response.ok) {
         const result = await response.json();
         botReply = result;
@@ -137,41 +140,52 @@ const ContextProvider = (props) => {
     } catch (error) {
       console.error("Error:", error);
     }
-
+  
     const formattedResponse = marked(
       botReply?.response || "Something went wrong"
     );
+    
     await sleep(1000);
+  
+    setConversation((prev) => {
+      const updatedMessages = [...prev.messages];
 
-
-    const userMessage1 = { type: "user", text: userPrompt };
-    const botMessage1 = { type: "bot", text: formattedResponse };
-
-    const updateConversation = async () => {
+      updatedMessages[updatedMessages.length - 1] = { type: "bot", text: formattedResponse };
+      return {
+        ...prev,
+        messages: updatedMessages,
+      };
+    });
+  
+    const saveToBackend = async () => {
       const response = await fetch(`http://127.0.0.1:8000/conversation/${activeConversationId}`, {
         method:"POST",
         headers:{
           "Content-type": "application/json",
         },
-        body: JSON.stringify({"userMsg": userMessage1, "botMsg": botMessage1, "prompt": prompt})
-      })
-      setUpdateSidebar(!updateSidebar)
-      const result = await response.json()
-      setConversation(result)
+        body: JSON.stringify({
+          userMsg: userMessage,
+          botMsg: { type: "bot", text: formattedResponse },
+          prompt: userPrompt
+        })
+      });
+      const result = await response.json();
+      setUpdateSidebar(!updateSidebar);
+  
       if (conversation.title === "New Chat") {
         setConversation((prev) => ({
           ...prev,
           title: userPrompt.slice(0, 20),
         }));
       }
-      
-    }
-    updateConversation()
-
+    };
+    saveToBackend();
+  
     setLoading(false);
     setStopIcon(false);
     setAllowSending(true);
   };
+  
 
   const stopReply = () => {
     stopReplyRef.current = true;

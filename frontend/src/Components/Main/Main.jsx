@@ -7,15 +7,8 @@ import { Context } from "../../Context/Context";
 const Main = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [file, setFile] = useState(null);
-  const cardImages = [
-    assets.compass_icon,
-    assets.bulb_icon,
-    assets.message_icon,
-    assets.code_icon,
-  ];
   const {
     onSent,
-    showResult,
     loading,
     setInput,
     input,
@@ -81,7 +74,6 @@ const Main = () => {
               <div className={`result_title ${message.type}`}>
                 {message.type === "bot" ? (
                   <div className={`result_data`}>
-                    {/* <img src={assets.chatbot_icon} alt="" /> */}
                     {index === conversation.messages.length - 1 && loading ? (
                       <div className="loader">
                         <span></span>
@@ -90,7 +82,6 @@ const Main = () => {
                       </div>
                     ) : (
                       <div className="hello">
-                        {/* {scrollToBottom()} */}
                         <p
                           dangerouslySetInnerHTML={{ __html: message.text }}
                         ></p>

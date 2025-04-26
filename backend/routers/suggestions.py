@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from models.schemas import Suggestions
+from modelss.schemas import Suggestions
 from services.llm_service import getSuggestions
 router = APIRouter(prefix="/suggestions", tags=["Chatbot"])
 
