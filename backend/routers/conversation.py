@@ -20,7 +20,6 @@ def getInitialConversation(db: Session = Depends(get_db)):
     convo =  db.query(Conversation).order_by(Conversation.id.desc()).first()
     if convo:
         messages = [{"type": msg.type, "text": msg.text} for msg in convo.messages]
-        print("Hii")
         return {
             "sessionId": convo.session_id,
             "title": convo.title,
@@ -32,7 +31,6 @@ def getInitialConversation(db: Session = Depends(get_db)):
         db.add(new_convo)
         db.commit()
         db.refresh(new_convo)
-        print("Byeee")
         
         return {
             "sessionId": session_id,
@@ -69,7 +67,8 @@ def createNewConversation(newConversation: NewConversation, db: Session = Depend
 @router.get('/sidebar')
 def getSidebarDetails(db: Session = Depends(get_db)):
     convos = db.query(Conversation).all()
-    return [{"title": convo.title, "sessionId": convo.session_id} for convo in reversed(convos)]
+    if convos:
+        return [{"title": convo.title, "sessionId": convo.session_id} for convo in reversed(convos)]
 
 
 
@@ -82,7 +81,6 @@ def delete_conversation(currentSessionID: str, db: Session = Depends(get_db)):
     db.delete(convo)
     db.commit()
 
-    # Check if conversations empty now
     if db.query(Conversation).count() == 0:
         session_id = str(uuid.uuid4())
         new_convo = Conversation(session_id=session_id, title="New Chat")
