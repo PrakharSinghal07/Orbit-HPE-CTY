@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from models import Conversation, Message
-from modelss.schemas import NewConversation, ConvPatch
+from schemas import NewConversation, ConvPatch
 from database import SessionLocal
 import uuid
 
