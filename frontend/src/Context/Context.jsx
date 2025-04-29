@@ -3,9 +3,7 @@ import { marked } from "marked";
 
 export const Context = createContext();
 
-
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
 
 const generateNewChat = async () => {
   try {
@@ -44,26 +42,28 @@ const ContextProvider = (props) => {
 
   const [conversation, setConversation] = useState({});
   const [activeConversationId, setActiveConversationId] = useState(null);
-  const [updateSidebar, setUpdateSidebar] = useState(true)
-  const [updateSidebar2, setUpdateSidebar2] = useState(true)
+  const [updateSidebar, setUpdateSidebar] = useState(true);
+  const [updateSidebar2, setUpdateSidebar2] = useState(true);
   const createNewChat = async () => {
-    if(conversation.title !== "New Chat"){
-    const newChat = await generateNewChat();
-    setConversation(newChat);
-    setActiveConversationId(newChat.sessionId);
+    stopReply();
+    if (conversation.title !== "New Chat") {
+      const newChat = await generateNewChat();
+      setConversation(newChat);
+      setActiveConversationId(newChat.sessionId);
     }
   };
 
   useEffect(() => {
     const getConvo = async () => {
-      const response = await fetch(`http://127.0.0.1:8000/conversation/initial`, {
-        method: "GET",
-      });
+      const response = await fetch(
+        `http://127.0.0.1:8000/conversation/initial`,
+        {
+          method: "GET",
+        }
+      );
       const result = await response.json();
       {
-        setConversation(result);  
-
-
+        setConversation(result);
 
         setActiveConversationId(result.sessionId);
       }
@@ -74,18 +74,17 @@ const ContextProvider = (props) => {
   useEffect(() => {
     if (!activeConversationId) return;
     const getCurrentConversation = async () => {
+      stopReplyRef.current = true;
       const response = await fetch(
         `http://127.0.0.1:8000/conversation/active/${activeConversationId}`
       );
       const result = await response.json();
-      if(result && result.sessionId !== conversation.sessionId)
-        setConversation(result); 
-
-
+      if (result && result.sessionId !== conversation.sessionId){
+        setConversation(result);
+      }
     };
     getCurrentConversation();
   }, [activeConversationId]);
-  
 
   const getSuggestions = async () => {
     try {
@@ -103,27 +102,73 @@ const ContextProvider = (props) => {
 
   const onSent = async (prompt, file) => {
     const userPrompt = prompt || input;
-  
+
     setAllowSending(false);
     setLoading(true);
     stopReplyRef.current = false;
     setStopIcon(true);
     setShowResult(true);
-  
+
     const userMessage = { type: "user", text: userPrompt };
     const botMessage = { type: "bot", text: "..." };
-  
+
     setConversation((prev) => ({
       ...prev,
       messages: [...(prev.messages || []), userMessage, botMessage],
     }));
-  
+
     setInput("");
-  
+
     const formData = new FormData();
     formData.append("message", userPrompt);
     if (file) formData.append("file", file);
-  
+
+    // const userPayload = {
+    //   query: userPrompt,
+    //   collection_name: "SLURM",
+    //   k: 3,
+    //   expand_with_model_knowledge: true,
+    //   gemini_api_key: "AIzaSyCHrXPFGHX565uVzOVECqjsN6m77_VN9n0",
+    // };
+
+    // let botReply;
+    // try {
+    //   const response = await fetch(" http://34.93.92.50:8000/rag/answer", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify(userPayload),
+    //   });
+
+    //   console.log("Response status:", response.status);
+
+    //   if (response.ok) {
+    //     const result = await response.json();
+    //     console.log("Raw result object:", result);
+
+    //     if (result && result.answer) {
+    //       botReply = { response: result.answer };
+    //     } else {
+    //       console.error("Unexpected response structure:", result);
+    //       botReply = {
+    //         response: "Unexpected response format from RAG service",
+    //       };
+    //     }
+    //   } else {
+    //     console.error("Error:", response.statusText);
+    //     botReply = { response: `Error: ${response.statusText}` };
+    //   }
+    // } catch (error) {
+    //   console.error("Error:", error);
+    //   botReply = { response: `Error: ${error.message}` };
+    // }
+
+    // const formattedResponse = marked(
+    //   botReply?.response || "Something went wrong"
+    // );
+
+    // await sleep(1000);
     let botReply;
     try {
       const response = await fetch("http://127.0.0.1:8000/chat", {
@@ -146,32 +191,55 @@ const ContextProvider = (props) => {
     );
     
     await sleep(1000);
-  
-    setConversation((prev) => {
-      const updatedMessages = [...prev.messages];
 
-      updatedMessages[updatedMessages.length - 1] = { type: "bot", text: formattedResponse };
-      return {
-        ...prev,
-        messages: updatedMessages,
-      };
-    });
-  
-    const saveToBackend = async () => {
-      const response = await fetch(`http://127.0.0.1:8000/conversation/${activeConversationId}`, {
-        method:"POST",
-        headers:{
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify({
-          userMsg: userMessage,
-          botMsg: { type: "bot", text: formattedResponse },
-          prompt: userPrompt
-        })
+    let currentIndex = 0;
+
+    const typeBotResponse = () => {
+      setConversation((prev) => {
+        const updatedMessages = [...prev.messages];
+        const currentText = formattedResponse.slice(0, currentIndex);
+        updatedMessages[updatedMessages.length - 1] = {
+          type: "bot",
+          text: marked(currentText),
+        };
+        return {
+          ...prev,
+          messages: updatedMessages,
+        };
       });
+
+      currentIndex++;
+
+      if (currentIndex <= formattedResponse.length && !stopReplyRef.current) {
+        setTimeout(typeBotResponse, 10);
+      } else {
+        saveToBackend();
+        setLoading(false);
+        setStopIcon(false);
+        setAllowSending(true);
+      }
+    };
+
+    typeBotResponse();
+
+    async function saveToBackend() {
+      const response = await fetch(
+        `http://127.0.0.1:8000/conversation/${activeConversationId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify({
+            userMsg: userMessage,
+            botMsg: { type: "bot", text: formattedResponse },
+            prompt: userPrompt,
+          }),
+        }
+      );
       const result = await response.json();
       setUpdateSidebar(!updateSidebar);
-  
+
       if (conversation.title === "New Chat") {
         setConversation((prev) => ({
           ...prev,
@@ -179,19 +247,30 @@ const ContextProvider = (props) => {
         }));
       }
     };
-    saveToBackend();
-  
+
     setLoading(false);
-    setStopIcon(false);
-    setAllowSending(true);
   };
-  
 
   const stopReply = () => {
     stopReplyRef.current = true;
     setLoading(false);
     setAllowSending(true);
     setStopIcon(false);
+    setInput("");
+    
+    setConversation(prev => {
+      const messages = [...prev.messages];
+      if (messages.length && messages[messages.length - 1].type === "bot") {
+        messages[messages.length - 1] = {
+          type: "bot",
+          text: messages[messages.length - 1].text
+        };
+      }
+      return {
+        ...prev,
+        messages
+      };
+    });
   };
 
   return (
@@ -213,7 +292,7 @@ const ContextProvider = (props) => {
         updateSidebar,
         setUpdateSidebar,
         updateSidebar2,
-        setUpdateSidebar2
+        setUpdateSidebar2,
       }}
     >
       {props.children}
