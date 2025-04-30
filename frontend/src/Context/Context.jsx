@@ -132,8 +132,10 @@ const ContextProvider = (props) => {
     // };
 
     // let botReply;
+    // const apiUrl = import.meta.env.VITE_API_URL;
+    // console.log(apiUrl);
     // try {
-    //   const response = await fetch(" http://34.93.92.50:8000/rag/answer", {
+    //   const response = await fetch(`${apiUrl}/rag/answer`, {
     //     method: "POST",
     //     headers: {
     //       "Content-Type": "application/json",
