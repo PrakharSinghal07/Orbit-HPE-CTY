@@ -9,7 +9,7 @@ const Layout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const location = useLocation();
- 
+
     const navItems = [
         { name: 'Chatboard', href: "/chat" },
     ];

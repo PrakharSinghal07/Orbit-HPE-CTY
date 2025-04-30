@@ -49,6 +49,10 @@ Before starting, make sure you have the following installed:
     ```bash
     uvicorn main:app --reload
     ```
+    After setting up everything, start the backend on local:
+    ```bash
+    fastapi dev main.py
+    ```
 
 6. **Database Migration**:
     The database tables are automatically created on server start-up (using SQLAlchemy). If you need to run migrations manually, you can use Alembic (for future schema changes).
