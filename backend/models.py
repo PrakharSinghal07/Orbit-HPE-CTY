@@ -2,16 +2,13 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from database import Base
 
-
-
-
 class Conversation(Base):
     __tablename__ = "conversations"
 
     id = Column(Integer, primary_key=True, index=True)
     session_id = Column(String, unique=True, index=True)
     title = Column(String, default="New Chat")
-
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     messages = relationship("Message", back_populates="conversation", cascade="all, delete")
 
 class Message(Base):
@@ -23,3 +20,11 @@ class Message(Base):
     text = Column(String)
 
     conversation = relationship("Conversation", back_populates="messages")
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
+    email = Column(String, unique=True, index=True)
+    hashed_password = Column(String)

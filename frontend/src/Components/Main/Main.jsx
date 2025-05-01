@@ -3,8 +3,12 @@ import "./Main.css";
 import { assets } from "../../assets/assets";
 import Card from "./Card";
 import { Context } from "../../Context/Context";
-
+import Sidebar from "../Sidebar/Sidebar";
+import { useAuth } from "../../utils/AuthContext";
 const Main = () => {
+
+  const { logout } = useAuth();
+
   const theme = localStorage.getItem('theme')
   const [isDarkMode, setIsDarkMode] = useState(true);
   useEffect(() => {
@@ -50,21 +54,23 @@ const Main = () => {
   };
   return (
     <div className={`main`}>
+      <Sidebar />
       <div className="nav">
-        <p>Orbit</p>{" "}
-        <div className="nav_right">
-          {" "}
-          <div className="nav_right">
-            <img
-              className={isDarkMode ? "light_mode_icon" : "dark_mode_icon"}
-              src={isDarkMode ? assets.light_mode : assets.night_mode}
-              onClick={toggleDarkMode}
-              alt={isDarkMode ? "Light Mode" : "Dark Mode"}
-            />
-            <img src={assets.user_icon} alt="User" />
-          </div>
-        </div>{" "}
-      </div>
+  <p>Orbit</p>
+  <div className="nav_right">
+    <img
+      className={isDarkMode ? "light_mode_icon" : "dark_mode_icon"}
+      src={isDarkMode ? assets.light_mode : assets.night_mode}
+      onClick={toggleDarkMode}
+      alt={isDarkMode ? "Light Mode" : "Dark Mode"}
+    />
+    <img src={assets.user_icon} alt="User" />
+    <button className="logout_button" onClick={logout}>
+      Logout
+    </button>
+  </div>
+</div>
+
       <div className="main_container">
         {!conversation.messages ||
         conversation.messages.length === 0 ? (
