@@ -191,6 +191,22 @@ const ContextProvider = (props) => {
     const formattedResponse = marked(
       botReply?.response || "Something went wrong"
     );
+    console.log("Formatted response:", formattedResponse);
+    console.log("Bot reply:", botReply);
+    console.log("User message:", userMessage);  
+    
+    // Speak the response using the Web Speech API
+    const speakResponse = (text) => {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US"; // Set the language
+      utterance.rate = 1; // Set the speaking rate (1 is normal speed)
+      utterance.pitch = 1; // Set the pitch (1 is default)
+      window.speechSynthesis.speak(utterance);
+    };
+    
+    // Call the speakResponse function with the plain text (strip HTML tags)
+    const plainTextResponse = botReply?.response?.replace(/<[^>]*>?/gm, "") || "Something went wrong";
+    speakResponse(plainTextResponse);
     
     await sleep(1000);
 
