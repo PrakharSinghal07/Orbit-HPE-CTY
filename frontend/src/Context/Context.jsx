@@ -258,7 +258,6 @@ const ContextProvider = (props) => {
     setLoading(false);
     setAllowSending(true);
     setStopIcon(false);
-    setInput("");
     
     setConversation(prev => {
       const messages = [...prev.messages];
