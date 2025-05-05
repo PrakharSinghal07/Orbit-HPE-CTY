@@ -14,12 +14,12 @@ const Login = () => {
 
   const formik = useFormik({
     initialValues: {
-      username: "",
+      email: "",
       password: "",
     },
     validationSchema: Yup.object({
-      username: Yup.string("Invalid username format").required(
-        "Username is required"
+      email: Yup.string("Invalid email format").required(
+        "Email is required"
       ),
       password: Yup.string()
         .min(6, "Password must be at least 6 characters")
@@ -29,7 +29,7 @@ const Login = () => {
       setLoading(true);
 
       await catchAsync(async () => {
-        const response = await loginApi(values.username, values.password);
+        const response = await loginApi({email: values.email, password: values.password});
         const { access_token, expires_at } = response;
         login(access_token, expires_at);
         showSuccess(response.message ?? "You have successfully logged in.");
@@ -46,25 +46,25 @@ const Login = () => {
           Login
         </h2>
         <form onSubmit={formik.handleSubmit} className="space-y-5">
-          {/* Username Field */}
+          {/* Email Field */}
           <div>
             <label
-              htmlFor="username"
+              htmlFor="email"
               className="block text-sm font-medium text-gray-300"
             >
-              Username
+              Email
             </label>
             <input
-              id="username"
-              name="username"
-              type="username"
-              value={formik.values.username}
+              id="email"
+              name="email"
+              type="email"
+              value={formik.values.email}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               className="w-full mt-2 p-2 bg-gray-700 text-white rounded border border-gray-600"
             />
-            {formik.touched.username && formik.errors.username && (
-              <small className="text-red-400">{formik.errors.username}</small>
+            {formik.touched.email && formik.errors.email && (
+              <small className="text-red-400">{formik.errors.email}</small>
             )}
           </div>
 

@@ -1,14 +1,27 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../utils/AuthContext";
+import { useChats } from "../utils/ChatContext"; 
 import { showSuccess } from "../utils/helper";
-import Logo from "../assets/rocket-ship.png";
+import Logo from "../assets/logo.png";
 
 const DefaultLayout = () => {
   const { isAuthenticated, logout } = useAuth();
+  const { activeChat, startNewChat, resetChats } = useChats();  
+  const navigate = useNavigate();
 
   const handleLogout = () => {
+    resetChats();
     logout();
     showSuccess("Logged out successfully");
+  };
+
+  const goToChatboard = async () => {
+    if (activeChat) {
+      navigate(`/chat/${activeChat.chat_id}`);
+    } else {
+      const newChat = await startNewChat();
+      navigate(`/chat/${newChat.chat_id}`);
+    }
   };
 
   return (
@@ -26,13 +39,13 @@ const DefaultLayout = () => {
         <div>
           {isAuthenticated ? (
             <div className="flex items-center gap-4">
-              <Link
-                to={"/chat"}
-                className="hover:underline"
+              <button
+                onClick={goToChatboard}
+                className="hover:underline text-white cursor-pointer"
               >
                 Chatboard
-              </Link>
-              <button onClick={handleLogout} className="hover:underline">
+              </button>
+              <button onClick={handleLogout} className="hover:underline cursor-pointer">
                 Logout
               </button>
             </div>

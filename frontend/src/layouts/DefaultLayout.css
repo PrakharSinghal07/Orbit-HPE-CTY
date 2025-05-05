@@ -1,0 +1,50 @@
+/* Apply full screen background */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #000;
+    color: white;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Top Navbar styling */
+  nav {
+    box-shadow: none;
+  }
+  
+  nav .logo-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  nav h4 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+  }
+  
+  nav .nav-links a,
+  nav .nav-links button {
+    font-size: 1rem;
+    font-weight: 500;
+    color: white;
+    transition: color 0.3s ease;
+  }
+  
+  nav .nav-links a:hover,
+  nav .nav-links button:hover {
+    color: #00f0ff;
+  }
+  
+  /* Main Content */
+  main {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+  }
+  
+  

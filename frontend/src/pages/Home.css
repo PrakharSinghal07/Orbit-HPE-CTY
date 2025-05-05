@@ -1,0 +1,80 @@
+.home-wrapper {
+    position: relative;
+    background-color: #000;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    padding: 2rem;
+}
+
+.home-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+.home-title {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.home-subtitle {
+    font-size: 1.2rem;
+    color: #ccc;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+}
+
+.home-button {
+    padding: 0.75rem 2rem;
+    border: 1px solid white;
+    border-radius: 9999px;
+    background: transparent;
+    color: white;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.home-button:hover {
+    background: white;
+    color: black;
+}
+
+.gradient-sphere {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #00f0ff, #8b5cf6, #ec4899);
+    filter: blur(80px);
+    opacity: 0.6;
+    top: 50%;
+    left: -300px;
+    transform: translateY(-50%);
+    animation: slideIn 2s ease-out forwards, spin 20s linear infinite;
+    z-index: 1;
+}
+
+@keyframes slideIn {
+    from {
+        left: -300px;
+    }
+    to {
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}

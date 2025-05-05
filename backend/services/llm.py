@@ -1,6 +1,5 @@
 import random
-
-
+# Mocked “LLM” suggestions for chat initiation.
 suggestion_bank = [
     "Steps to fix a reboot loop",
     "How to check node logs?",
@@ -11,10 +10,12 @@ suggestion_bank = [
     "How to analyze performance degradation?",
 ]
 
+# Return a mocked LLM response to a user query.
 def get_llm_response(query: str):
     response = f"Mocked response to: '{query}'"
     return response
 
-def getSuggestions():
+# Return three random suggestions from the bank.
+def get_suggestions():
   suggestions = random.sample(suggestion_bank, 3)
   return suggestions

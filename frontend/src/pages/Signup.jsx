@@ -16,7 +16,7 @@ const Signup = () => {
   const formik = useFormik({
     initialValues: {
       email: "",
-      username: "",
+      name: "",
       password: "",
       confirmPassword: "",
     },
@@ -24,8 +24,8 @@ const Signup = () => {
       email: Yup.string()
         .email("Invalid email format")
         .required("Email is required"),
-      username: Yup.string("Invalid username")
-        .required("Username is required"),
+      name: Yup.string("Invalid name")
+        .required("Name is required"),
       password: Yup.string()
         .min(6, "Password must be at least 6 characters")
         .required("Password is required"),
@@ -38,7 +38,7 @@ const Signup = () => {
 
       await catchAsync(
         async () => {
-          const response = await signup(values.email, values.username, values.password);
+          const response = await signup({email:values.email, name:values.name, password:values.password});
           const { access_token, expires_at } = response;
           login(access_token, expires_at);
           showSuccess(response.message ?? "You have successfully signed up.");
@@ -57,25 +57,25 @@ const Signup = () => {
           Sign Up
         </h2>
         <form onSubmit={formik.handleSubmit} className="space-y-5">
-          {/* Username */}
+          {/* Name */}
           <div>
             <label
-              htmlFor="username"
+              htmlFor="name"
               className="block text-sm font-medium text-gray-300"
             >
-              Username
+              Name
             </label>
             <input
-              id="username"
-              name="username"
-              type="username"
-              value={formik.values.username}
+              id="name"
+              name="name"
+              type="name"
+              value={formik.values.name}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               className="w-full mt-2 p-2 bg-gray-700 text-white rounded border border-gray-600"
             />
-            {formik.touched.username && formik.errors.username ? (
-              <small className="text-red-400">{formik.errors.username}</small>
+            {formik.touched.name && formik.errors.name ? (
+              <small className="text-red-400">{formik.errors.name}</small>
             ) : null}
           </div>
           {/* Email */}

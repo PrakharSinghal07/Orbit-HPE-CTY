@@ -1,44 +1,45 @@
-from pydantic import BaseModel, Field , EmailStr
-from typing import List, Literal
+from pydantic import BaseModel, EmailStr
+from typing import List, Optional
 from datetime import datetime
 
-
-class ChatRequest(BaseModel):
-  query: str
-
-
-class ChatResponse(BaseModel):
-  response: str
-
-
-class Suggestions(BaseModel):
-  Suggestions: List[str]
-  
-class Message(BaseModel):
-    type: Literal["user", "bot"]
-    text: str
-
-    
-class NewConversation(BaseModel):
-    title: str
-    messages: List[Message]
-    
-
-class ConvPatch(BaseModel):
-  userMsg: Message
-  botMsg: Message
-  prompt: str
+# ─── AUTH ─────────────────────────────────────────────────────────────────────
 
 class UserCreate(BaseModel):
-  username: str
-  email: EmailStr
-  password: str
+    name: str
+    email: EmailStr
+    password: str
 
 class UserLogin(BaseModel):
-  username: str
-  password: str
+    email: EmailStr
+    password: str
 
 class Token(BaseModel):
-  access_token: str
-  token_type: str
-  expires_at: datetime
+    access_token: str
+    token_type: str
+    expires_at: datetime
+
+# ─── CHAT / MESSAGE ────────────────────────────────────────────────────────────
+
+class MessageCreate(BaseModel):
+    content: str
+    type: str
+
+class ChatCreate(BaseModel):
+    name: str
+    messages: Optional[List[MessageCreate]] = []
+
+class MessageOut(BaseModel):
+    content: str
+    type: str
+    class Config:
+        from_attributes = True
+
+class ChatOut(BaseModel):
+    chat_id: str
+    name: str
+    messages: List[MessageOut]
+    class Config:
+        from_attributes  = True
+
+class ChatPatch(BaseModel):
+    name: str

@@ -5,7 +5,7 @@ const AuthenticatedRoute = () => {
   const { isAuthenticated } = useAuth();
   
   if (isAuthenticated) {
-    return <Navigate to={"/chat"} replace />;
+    return <Navigate to={"/"} replace />;
   }
 
   return <Outlet />;

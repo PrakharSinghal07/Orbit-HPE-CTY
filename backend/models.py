@@ -1,30 +1,47 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+import uuid
+from datetime import datetime
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum, DateTime
 from sqlalchemy.orm import relationship
 from database import Base
+import enum
 
-class Conversation(Base):
-    __tablename__ = "conversations"
+class UserType(enum.Enum):
+    USER = "user"
+    ADMIN = "admin"
 
-    id = Column(Integer, primary_key=True, index=True)
-    session_id = Column(String, unique=True, index=True)
-    title = Column(String, default="New Chat")
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    messages = relationship("Message", back_populates="conversation", cascade="all, delete")
-
-class Message(Base):
-    __tablename__ = "messages"
-
-    id = Column(Integer, primary_key=True, index=True)
-    conversation_id = Column(Integer, ForeignKey("conversations.id"))
-    type = Column(String)
-    text = Column(String)
-
-    conversation = relationship("Conversation", back_populates="messages")
+class MessageType(enum.Enum):
+    USER = "user"
+    BOT = "bot"
 
 class User(Base):
     __tablename__ = "users"
+    id           = Column(Integer, primary_key=True, index=True)
+    name         = Column(String, nullable=False)
+    email        = Column(String, unique=True, index=True, nullable=False)
+    password     = Column(String, nullable=False)
+    google_token = Column(String, nullable=True)
+    type         = Column(Enum(UserType), default=UserType.USER, nullable=False)
 
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True)
-    email = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
+    chats        = relationship("Chat", back_populates="owner", cascade="all, delete")
+
+class Chat(Base):
+    __tablename__ = "chats"
+    id         = Column(Integer, primary_key=True, index=True)
+    chat_id    = Column(String, unique=True, index=True, default=lambda: str(uuid.uuid4()))
+    user_id    = Column(Integer, ForeignKey("users.id"), nullable=False)
+    name       = Column(String, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    messages   = relationship("Message", back_populates="chat", cascade="all, delete", order_by="desc(Message.created_at)")
+    owner      = relationship("User", back_populates="chats")
+
+class Message(Base):
+    __tablename__ = "messages"
+    id         = Column(Integer, primary_key=True, index=True)
+    chat_id    = Column(String, ForeignKey("chats.chat_id"), nullable=False)
+    content    = Column(String, nullable=False)
+    type       = Column(Enum(MessageType), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    chat       = relationship("Chat", back_populates="messages")
