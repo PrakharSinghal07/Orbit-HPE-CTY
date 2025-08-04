@@ -16,7 +16,9 @@
     "marked": "^15.0.7",
     "mime-types": "^2.1.35",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-router": "^7.7.1",
+    "react-router-dom": "^7.7.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
