@@ -2,16 +2,15 @@ import React, { useContext, useEffect, useState } from "react";
 import "./Sidebar.css";
 import { assets } from "../../assets/assets";
 import { Context } from "../../Context/Context";
-
+const backend = import.meta.env.VITE_BACKEND_URL;
 const Sidebar = ({ sidebarExpanded, setSidebarExpanded }) => {
-  const backend = import.meta.env.VITE_BACKEND_URL;
   const { setUpdateSidebar2, updateSidebar, setActiveConversationId, activeConversationId, createNewChat, stopReply } = useContext(Context);
   const [conversations, setConversations] = useState([]);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
 
   useEffect(() => {
     const fetchTitle = async () => {
-      const response = await fetch("http://127.0.0.1:8000/conversation/sidebar");
+      const response = await fetch(`${backend}/conversation/sidebar`);
       const result = await response.json();
       setConversations(result);
     };
