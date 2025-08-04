@@ -2,6 +2,10 @@
 
 Orbit is a chatbot application built using **FastAPI** for the backend and **React** for the frontend. The project aims to assist service engineers with debugging issues through an interactive chatbot. 
 
+# Live Link
+
+[Orbit : https://orbit-lcm-hpe.netlify.app/](https://orbit-lcm-hpe.netlify.app/)
+
 ## Prerequisites
 
 Before starting, make sure you have the following installed:
