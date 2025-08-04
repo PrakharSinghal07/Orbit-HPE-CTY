@@ -19,3 +19,7 @@ async def get_chat_response(
 
     response = get_llm_response(message)
     return {"response": response}
+
+@router.get("/ping")
+async def ping():
+    return {"message": "pong"}
