@@ -488,10 +488,7 @@ body {
 .main_text_input::-webkit-scrollbar {
   display: none;
 }
-.main_text_input:focus {
-  /* border-color: var(--accent-blue); */
-  /* box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); */
-}
+
 
 .main_text_input::placeholder {
   color: var(--text-color);

@@ -2,12 +2,13 @@ import { createContext, useState, useRef, useEffect } from "react";
 import { marked } from "marked";
 import { GoogleGenAI } from "@google/genai";
 export const Context = createContext();
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const generateNewChat = async () => {
   try {
-    const response = await fetch("http://localhost:8000/conversation/create", {
+    const response = await fetch(`${backendUrl}/conversation/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -55,7 +56,7 @@ export const ContextProvider = (props) => {
 
   useEffect(() => {
     const getConvo = async () => {
-      const response = await fetch(`http://127.0.0.1:8000/conversation/initial`, {
+      const response = await fetch(`${backendUrl}/conversation/initial`, {
         method: "GET",
       });
       const result = await response.json();
@@ -72,7 +73,7 @@ export const ContextProvider = (props) => {
     if (!activeConversationId) return;
     const getCurrentConversation = async () => {
       stopReplyRef.current = true;
-      const response = await fetch(`http://127.0.0.1:8000/conversation/active/${activeConversationId}`);
+      const response = await fetch(`${backendUrl}/conversation/active/${activeConversationId}`);
       const result = await response.json();
       if (result && result.sessionId !== conversation.sessionId) {
         setConversation(result);
@@ -83,7 +84,7 @@ export const ContextProvider = (props) => {
 
   const getSuggestions = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/suggestions/");
+      const response = await fetch(`${backendUrl}/suggestions/`);
       const data = await response.json();
       setSuggestions(data.suggestions);
     } catch (error) {
@@ -169,7 +170,7 @@ export const ContextProvider = (props) => {
 
     let botReply;
     try {
-      const response = await fetch("http://127.0.0.1:8000/chat", {
+      const response = await fetch(`${backendUrl}/chat`, {
         method: "POST",
         body: formData,
       });
@@ -339,7 +340,7 @@ Use this context to reply to the following user message:
     typeBotResponse();
 
     async function saveToBackend() {
-      const response = await fetch(`http://127.0.0.1:8000/conversation/${activeConversationId}`, {
+      const response = await fetch(`${backendUrl}/conversation/${activeConversationId}`, {
         method: "POST",
         headers: {
           "Content-type": "application/json",
